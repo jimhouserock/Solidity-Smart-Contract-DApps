@@ -21,7 +21,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-// Creating a new contract called "NFTMinter" that inherits from ERC721, ERC721URIStorage,
+// Creating a new contract called "NFTMinter" that inherits from ERC721,
 //  and Ownable contracts
 
 contract NFTMinter is ERC721, Ownable {
