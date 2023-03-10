@@ -40,9 +40,6 @@ contract NFTMinter is ERC721, Ownable {
     // tokensMinted: A mapping that keeps track of the number of tokens that have been minted per wallet
     mapping(address => uint256) public tokensMinted;
 
-    //store the token URI for each token ID
-    mapping(uint256 => string) private _tokenURIs;
-
 
 
     // Constructor function to set the maximum supply to 2 when the contract is deployed
