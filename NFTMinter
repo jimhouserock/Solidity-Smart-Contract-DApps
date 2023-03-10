@@ -12,11 +12,6 @@ changing the maximum supply, and withdrawing funds.
 The NFT can be used for various purposes such as digital art, gaming, and collectibles.
 */
 
-/**
-* @dev ContractDescription
-* @custom:dev-run-script file_path
-*/
-
 // This code is written in Solidity version 0.8.4 and above
 pragma solidity ^0.8.4;
 
