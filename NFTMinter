@@ -1,0 +1,122 @@
+// SPDX-License-Identifier: Unlicensed
+
+// Author: @_ZenProgrammer
+// Date: March 11, 2023
+/** Business Purpose: 
+The purpose of this contract is to create a non-fungible token (NFT) on the Ethereum blockchain 
+that can be minted by users for a fixed price. 
+The contract ensures that users can only mint one token per wallet, 
+and that the total supply of tokens does not exceed a predetermined maximum. 
+The contract also includes functions for enabling and disabling minting, 
+changing the maximum supply, and withdrawing funds. 
+The NFT can be used for various purposes such as digital art, gaming, and collectibles.
+*/
+
+/**
+* @dev ContractDescription
+* @custom:dev-run-script file_path
+*/
+
+// This code is written in Solidity version 0.8.4 and above
+pragma solidity ^0.8.4;
+
+// Importing the necessary contracts from OpenZeppelin
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+// Creating a new contract called "NFTMinter" that inherits from ERC721 and Ownable contracts
+contract NFTMinter is ERC721, Ownable {
+    // mintPrice: The price in ether that each token will cost to be minted
+    uint256 public mintPrice = 0.01 ether;
+
+     // totalSupply: The total number of tokens that have been minted
+    uint256 public totalSupply;
+
+    // maxSupply: The maximum number of tokens that can be minted
+    uint256 public maxSupply;
+
+    // isMintEnabled: Boolean value that indicates if minting is currently enabled or disabled    
+    bool public isMintEnabled;
+
+    // tokensMinted: A mapping that keeps track of the number of tokens that have been minted per wallet
+    mapping(address => uint256) public tokensMinted;
+
+    // 1. TokenMinted event is emitted when a new token is minted
+    event TokenMinted(address indexed owner, uint256 indexed tokenId);
+
+    // 2. MintingEnabled event is emitted when minting is enabled or disabled
+    event MintingEnabled(bool isEnabled);
+    
+    // 3. MaxSupplyChanged event is emitted when the maximum supply of tokens is changed
+    event MaxSupplyChanged(uint256 newMaxSupply);
+
+    // 4. FundsWithdrawn event is emitted when the owner of the contract withdraws its funds
+    event FundsWithdrawn(address indexed recipient, uint256 amount);
+
+    // Constructor function to set the maximum supply to 2 when the contract is deployed
+    constructor() payable ERC721("NFT Minter", "NFTM") {
+        maxSupply = 2;
+    }
+
+    // Function to toggle minting on/off by the contract owner
+    function toggleMinting() external onlyOwner {
+        isMintEnabled = !isMintEnabled;
+        emit MintingEnabled(isMintEnabled);
+    }
+
+    // Function to set the maximum supply by the contract owner
+    function setMaxSupply(uint256 newMaxSupply) external onlyOwner {
+        maxSupply = newMaxSupply;
+        emit MaxSupplyChanged(newMaxSupply);
+    }
+
+    // Function to mint a new token and assign it to the sender's address
+    function mintToken() external payable {
+        // Check if minting is enabled
+        require(isMintEnabled, "Minting is not enabled");
+
+        // Check if the maximum tokens per wallet have not been exceeded
+        require(tokensMinted[msg.sender] < 1, "Maximum tokens per wallet exceeded.");
+
+        // Check if the sent value is equal to the mint price
+        require(msg.value == mintPrice, "Incorrect value sent.");
+
+        // Check if the maximum supply of tokens has not been reached
+        require(totalSupply < maxSupply, "All tokens have been minted.");
+
+        // Increment the number of tokens minted for the sender
+        tokensMinted[msg.sender]++;
+
+        // Increment the total supply of tokens
+        totalSupply++;
+
+        // Assign a unique token ID
+        uint256 tokenId = totalSupply;
+
+        // Mint the token and assign it to the sender's address
+        _safeMint(msg.sender, tokenId);
+
+        // Emit an event to indicate that the token has been minted
+        emit TokenMinted(msg.sender, tokenId);
+    }
+
+    //Fallback function to handle incoming ether
+    //This is useful if someone accidentally sends ether to the contract without specifying a function to call, as the ether will not be lost
+    //will still be stored in the contract's balance.
+    receive() external payable {}
+
+    // Function to withdraw the contract's funds by the contract owner
+    function withdrawFunds(address payable recipient) external onlyOwner {
+        // Assigns the current balance of the contract to a variable named "balance"
+        uint256 balance = address(this).balance;
+
+        // Requires that there are funds available to withdraw
+        require(balance > 0, "No funds to withdraw.");
+
+        // Transfers the balance to the specified recipient address
+        recipient.transfer(balance);
+
+        // Emits an event indicating the recipient and amount of funds withdrawn
+        emit FundsWithdrawn(recipient, balance);
+    }
+}
