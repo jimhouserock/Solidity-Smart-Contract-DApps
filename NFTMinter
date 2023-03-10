@@ -12,6 +12,7 @@ changing the maximum supply, and withdrawing funds.
 The NFT can be used for various purposes such as digital art, gaming, and collectibles.
 */
 
+
 // This code is written in Solidity version 0.8.4 and above
 pragma solidity ^0.8.4;
 
@@ -19,7 +20,10 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-// Creating a new contract called "NFTMinter" that inherits from ERC721 and Ownable contracts
+
+// Creating a new contract called "NFTMinter" that inherits from ERC721, ERC721URIStorage,
+//  and Ownable contracts
+
 contract NFTMinter is ERC721, Ownable {
     // mintPrice: The price in ether that each token will cost to be minted
     uint256 public mintPrice = 0.01 ether;
@@ -36,17 +40,10 @@ contract NFTMinter is ERC721, Ownable {
     // tokensMinted: A mapping that keeps track of the number of tokens that have been minted per wallet
     mapping(address => uint256) public tokensMinted;
 
-    // 1. TokenMinted event is emitted when a new token is minted
-    event TokenMinted(address indexed owner, uint256 indexed tokenId);
+    //store the token URI for each token ID
+    mapping(uint256 => string) private _tokenURIs;
 
-    // 2. MintingEnabled event is emitted when minting is enabled or disabled
-    event MintingEnabled(bool isEnabled);
-    
-    // 3. MaxSupplyChanged event is emitted when the maximum supply of tokens is changed
-    event MaxSupplyChanged(uint256 newMaxSupply);
 
-    // 4. FundsWithdrawn event is emitted when the owner of the contract withdraws its funds
-    event FundsWithdrawn(address indexed recipient, uint256 amount);
 
     // Constructor function to set the maximum supply to 2 when the contract is deployed
     constructor() payable ERC721("NFT Minter", "NFTM") {
@@ -56,13 +53,16 @@ contract NFTMinter is ERC721, Ownable {
     // Function to toggle minting on/off by the contract owner
     function toggleMinting() external onlyOwner {
         isMintEnabled = !isMintEnabled;
-        emit MintingEnabled(isMintEnabled);
     }
 
     // Function to set the maximum supply by the contract owner
     function setMaxSupply(uint256 newMaxSupply) external onlyOwner {
         maxSupply = newMaxSupply;
-        emit MaxSupplyChanged(newMaxSupply);
+    }
+
+    // Function to update the mint price by the contract owner
+    function setMintPrice(uint256 newMintPrice) external onlyOwner {
+        mintPrice = newMintPrice;
     }
 
     // Function to mint a new token and assign it to the sender's address
@@ -91,8 +91,6 @@ contract NFTMinter is ERC721, Ownable {
         // Mint the token and assign it to the sender's address
         _safeMint(msg.sender, tokenId);
 
-        // Emit an event to indicate that the token has been minted
-        emit TokenMinted(msg.sender, tokenId);
     }
 
     //Fallback function to handle incoming ether
@@ -111,7 +109,9 @@ contract NFTMinter is ERC721, Ownable {
         // Transfers the balance to the specified recipient address
         recipient.transfer(balance);
 
-        // Emits an event indicating the recipient and amount of funds withdrawn
-        emit FundsWithdrawn(recipient, balance);
     }
+
+
+
+
 }
