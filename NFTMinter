@@ -44,7 +44,7 @@ contract NFTMinter is ERC721, Ownable {
 
     // Constructor function to set the maximum supply to 2 when the contract is deployed
     constructor() payable ERC721("NFT Minter", "NFTM") {
-        maxSupply = 2;
+        maxSupply = 3;
     }
 
     // Function to toggle minting on/off by the contract owner
