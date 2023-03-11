@@ -65,3 +65,5 @@ function testSetMintPrice() public {
     // Check that the mint price has been updated and throw an error message if not
     Assert.equal(nftMinter.mintPrice(), 0.05 ether, "Mint price should be updated to 0.05 ether after calling setMintPrice");
 }
+
+}
