@@ -10,4 +10,4 @@ The purpose of this repository is to provide developers with a starting point fo
 
 We welcome contributions from the community, including bug fixes and new contract implementations. Please feel free to submit a pull request or open an issue if you have any questions or suggestions.
 
-Thank you for using the Solidity-Smart-Contract-DApps repository!
+Feel free to contact me through my social media for any freelancing projects.
