@@ -11,48 +11,57 @@ import "remix_tests.sol";
 import "remix_accounts.sol";
 import "../contracts/SimpleMint.sol";
 
+// Define a new Solidity contract named TestNFTMinter
 contract TestNFTMinter {
-    NFTMinter public nftMinter;
-    address payable public owner;
-    address payable public testRecipient;
+// Declare two public variables: nftMinter of type NFTMinter and owner of type address payable
+NFTMinter public nftMinter;
+address payable public owner;
+// Declare a public variable named testRecipient of type address payable
+address payable public testRecipient;
 
+// Define a function named beforeEach with public visibility
+function beforeEach() public {
+    // Instantiate a new NFTMinter contract and assign it to the nftMinter variable
+    nftMinter = new NFTMinter();
+    // Set the owner variable to the current contract address (converted to payable)
+    owner = payable(address(this));
 
-    function beforeEach() public {
-        nftMinter = new NFTMinter();
-        owner = payable(address(this));
+}
 
-    }
+// Define a function named testToggleMinting with public visibility
+function testToggleMinting() public {
+    // Check that minting is disabled by default and throw an error message if not
+    Assert.equal(nftMinter.isMintEnabled(), false, "Minting should be false by default");
 
-    function testToggleMinting() public {
-        //Ensure that minting is enabled by default
-        Assert.equal(nftMinter.isMintEnabled(), false, "Minting should be false by default");
+    // Call the toggleMinting function on the nftMinter contract to disable minting
+    nftMinter.toggleMinting();
+    // Check that minting is enabled and throw an error message if not
+    Assert.equal(nftMinter.isMintEnabled(), true, "Minting should be enabled after calling toggleMinting");
 
-        //Disable minting and check if it worked
-        nftMinter.toggleMinting();
-        Assert.equal(nftMinter.isMintEnabled(), true, "Minting should be enabled after calling toggleMinting");
+    // Call the toggleMinting function again to enable minting
+    nftMinter.toggleMinting();
+    // Check that minting is disabled and throw an error message if not
+    Assert.equal(nftMinter.isMintEnabled(), false, "Minting should be disabled after calling toggleMinting again");
+}
 
-        //Enable minting again and check if it worked
-        nftMinter.toggleMinting();
-        Assert.equal(nftMinter.isMintEnabled(), false, "Minting should be disabled after calling toggleMinting again");
-    }
+// Define a function named testSetMaxSupply with public visibility
+function testSetMaxSupply() public {
+    // Check that the maximum supply is set to 2 by default and throw an error message if not
+    Assert.equal(nftMinter.maxSupply(), 2, "Max supply should be 2 by default");
 
-    function testSetMaxSupply() public {
-        //Ensure that the max supply is set to 2 by default
-        Assert.equal(nftMinter.maxSupply(), 2, "Max supply should be 2 by default");
+    // Call the setMaxSupply function on the nftMinter contract to set a new maximum supply
+    nftMinter.setMaxSupply(5);
+    // Check that the maximum supply has been updated and throw an error message if not
+    Assert.equal(nftMinter.maxSupply(), 5, "Max supply should be updated to 5 after calling setMaxSupply");
+}
 
-        //Set a new max supply and check if it worked
-        nftMinter.setMaxSupply(5);
-        Assert.equal(nftMinter.maxSupply(), 5, "Max supply should be updated to 5 after calling setMaxSupply");
-    }
+// Define a function named testSetMintPrice with public visibility
+function testSetMintPrice() public {
+    // Check that the mint price is set to 0.01 ether by default and throw an error message if not
+    Assert.equal(nftMinter.mintPrice(), 0.01 ether, "Mint price should be 0.01 ether by default");
 
-    function testSetMintPrice() public {
-        //Ensure that the mint price is set to 0.01 ether by default
-        Assert.equal(nftMinter.mintPrice(), 0.01 ether, "Mint price should be 0.01 ether by default");
-
-        //Set a new mint price and check if it worked
-        nftMinter.setMintPrice(0.05 ether);
-        Assert.equal(nftMinter.mintPrice(), 0.05 ether, "Mint price should be updated to 0.05 ether after calling setMintPrice");
-    }
-    
-    
+    // Call the setMintPrice function on the nftMinter contract to set a new mint price
+    nftMinter.setMintPrice(0.05 ether);
+    // Check that the mint price has been updated and throw an error message if not
+    Assert.equal(nftMinter.mintPrice(), 0.05 ether, "Mint price should be updated to 0.05 ether after calling setMintPrice");
 }
