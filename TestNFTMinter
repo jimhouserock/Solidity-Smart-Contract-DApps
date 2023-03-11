@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: GPL-3.0
+        
+pragma solidity >=0.4.22 <0.9.0;
+
+// This import is automatically injected by Remix
+import "remix_tests.sol"; 
+
+// This import is required to use custom transaction context
+// Although it may fail compilation in 'Solidity Compiler' plugin
+// But it will work fine in 'Solidity Unit Testing' plugin
+import "remix_accounts.sol";
+import "../contracts/SimpleMint.sol";
+
+contract TestNFTMinter {
+    NFTMinter public nftMinter;
+    address payable public owner;
+    address payable public testRecipient;
+
+
+    function beforeEach() public {
+        nftMinter = new NFTMinter();
+        owner = payable(address(this));
+
+    }
+
+    function testToggleMinting() public {
+        //Ensure that minting is enabled by default
+        Assert.equal(nftMinter.isMintEnabled(), false, "Minting should be false by default");
+
+        //Disable minting and check if it worked
+        nftMinter.toggleMinting();
+        Assert.equal(nftMinter.isMintEnabled(), true, "Minting should be enabled after calling toggleMinting");
+
+        //Enable minting again and check if it worked
+        nftMinter.toggleMinting();
+        Assert.equal(nftMinter.isMintEnabled(), false, "Minting should be disabled after calling toggleMinting again");
+    }
+
+    function testSetMaxSupply() public {
+        //Ensure that the max supply is set to 2 by default
+        Assert.equal(nftMinter.maxSupply(), 2, "Max supply should be 2 by default");
+
+        //Set a new max supply and check if it worked
+        nftMinter.setMaxSupply(5);
+        Assert.equal(nftMinter.maxSupply(), 5, "Max supply should be updated to 5 after calling setMaxSupply");
+    }
+
+    function testSetMintPrice() public {
+        //Ensure that the mint price is set to 0.01 ether by default
+        Assert.equal(nftMinter.mintPrice(), 0.01 ether, "Mint price should be 0.01 ether by default");
+
+        //Set a new mint price and check if it worked
+        nftMinter.setMintPrice(0.05 ether);
+        Assert.equal(nftMinter.mintPrice(), 0.05 ether, "Mint price should be updated to 0.05 ether after calling setMintPrice");
+    }
+    
+    
+}
